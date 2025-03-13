@@ -83,12 +83,16 @@ def profile():
 
     user=User.query.filter_by(id=user_id).first()
 
-    return jsonify({
+    if user:
+        return jsonify({
         'user':{
             'name': user.name,
             'email': user.email
         }
-    }), HTTP_200_OK
+        }), HTTP_200_OK
+    else:
+        return jsonify({'error': HTTP_400_BAD_REQUEST}), HTTP_400_BAD_REQUEST
+
 
 # create user refresh token
 @auth.get("/token/refresh")

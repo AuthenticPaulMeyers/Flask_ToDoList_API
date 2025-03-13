@@ -17,7 +17,7 @@ class User(db.Model):
 
 class Todo(db.Model):
     id=db.Column(db.Integer, primary_key=True)
-    title=db.Column(db.String(30), unique=False, nullable=False)
+    title=db.Column(db.String(30), unique=True, nullable=False)
     description=db.Column(db.Text, unique=False, nullable=False)
     user_id=db.Column(db.Integer, db.ForeignKey("user.id"))
     create_at=db.Column(db.DateTime, default=datetime.now())
