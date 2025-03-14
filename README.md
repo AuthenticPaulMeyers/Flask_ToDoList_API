@@ -9,4 +9,4 @@ A RESTful API to allow users to manage their to-do list.
 
 4. Test the endpoints on `POST` `GET` `PUT` `DELETE` using POSTMAN
 
-## URL [FLASK ToDoList API](https://github.com/AuthenticPaulMeyers/Flask_ToDoList_API.git)
+## URL [FLASK ToDoList API](https://github.com/AuthenticPaulMeyers/Flask_ToDoList_API)
