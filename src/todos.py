@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
-from src.constants.http_status_codes import  HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_409_CONFLICT, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
-from src.database import db, Todo, User
+from src.constants.http_status_codes import  HTTP_200_OK, HTTP_201_CREATED, HTTP_409_CONFLICT, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from src.database import db, Todo
 from  flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import desc
 
 todos = Blueprint("todos", __name__, url_prefix="/todos")
 
@@ -29,7 +30,7 @@ def add_todo():
 
         return jsonify({
             'id': todo.id,
-            'titile': todo.title,
+            'title': todo.title,
             'description': todo.description,
             'created_at': todo.create_at,
             'updated_at': todo.updated_at
@@ -45,7 +46,7 @@ def all_todos():
     per_page=request.args.get('per_page', 6, type=int)
 
     #  using the GET request to retrieve todos
-    todos=Todo.query.filter_by(user_id=current_user_id).paginate(page=page, per_page=per_page)
+    todos=Todo.query.filter_by(user_id=current_user_id).order_by(Todo.create_at.desc()).paginate(page=page, per_page=per_page)
     data = []
         
     for todo in todos.items:
@@ -105,5 +106,37 @@ def delete_todo(id):
     else:
         return jsonify({'error': f'{HTTP_404_NOT_FOUND} File not found'}), HTTP_404_NOT_FOUND
         
+# update route
+@todos.put("/update/<int:id>")
+@todos.patch("/update/<int:id>")
+@jwt_required()
+def update_todo(id):
+    current_user_id=get_jwt_identity()
+
     
+    todo=Todo.query.filter_by(id=id, user_id=current_user_id).first()
+    
+    if todo:
+        title = request.get_json().get('title')
+        description = request.get_json().get('description')
+
+        if title is " " or description is " ":
+            return jsonify({"error": 'title or description cannot be null'})
+        
+        todo.title = title
+        todo.description = description
+
+        return jsonify({
+            'id': todo.id,
+            'title': todo.title,
+            'description': todo.description,
+            'created_at': todo.create_at,
+            'updated_at': todo.updated_at
+        }), HTTP_201_CREATED
+    else:
+        return jsonify({'error': f'{HTTP_400_BAD_REQUEST,} Bad request'}), HTTP_400_BAD_REQUEST,
+
+
+
+
 
