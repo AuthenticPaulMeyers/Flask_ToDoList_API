@@ -125,6 +125,7 @@ def update_todo(id):
         
         todo.title = title
         todo.description = description
+        db.session.commit()
 
         return jsonify({
             'id': todo.id,
